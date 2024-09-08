@@ -1,10 +1,3 @@
-/*
-Input handling
-Lamport clock
-Storage 
-Expiration function 
-
-*/
 // Start server 
 // Initialise producer consumer object
 // Start producer consumer thread 
@@ -23,4 +16,38 @@ print error statement
 
 end
 */
+
+import java.net.*;
+public class AggregationServer
+{
+    public static void main (String[] args)
+    {
+        ServerSocket Serversocket = null;
+        Socket socket = null;
+        ProducerConsumer ProducerConsumer = new ProducerConsumer();
+        ProducerConsumer.start();
+
+        try 
+        {
+            ServerSocket = new ServerSocket(3000);
+            System.out.println("Starting aggregation server...");
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        while (true)
+        {
+            try
+            {
+                socket = ServerSocket.accept();
+                new requestHandler(socket, ProducerConsumer).start();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+}
 
