@@ -1,0 +1,4 @@
+/*
+Client will send a GET request to the server to retrieve weather data in JSON format.
+Error handling
+*/
