@@ -4,8 +4,8 @@ This class will handle each request from clients (GET requests) or content serve
 
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.utill.Scanner; 
-import java.utill.Vector;
+import java.util.Scanner; 
+import java.util.Vector;
 import org.json.*;
 
 public class RequestHandler extends Thread 
@@ -23,7 +23,6 @@ public class RequestHandler extends Thread
     // check if incoming data has all required fields 
     // GET request or PUT request
     // Needs user agent, lamport time, accept and length
-
     public boolean valid_request(String request)
     {
         boolean request_type = false, user_agent = false, lamport_time = false, content_type = false, length = false;
@@ -59,12 +58,12 @@ public class RequestHandler extends Thread
     // Convert the input into a vector and store each line into a vector
     private Vector<String> string_to_vector(String request)
     {
-        String[] temp_string = data.split("\n");
+        String[] temp_string = request.split("\n");
         Vector<String> vector = new Vector<>();
         
-        for (int i = 0; i < temp_string.length(); i++)
+        for (int i = 0; i < temp_string.length; i++)
         {
-            if (temp_string[i] != "\n")
+            if (!temp_string[i].equals("\n"))
             {
                 vector.add(temp_string[i]);
             }
@@ -72,13 +71,13 @@ public class RequestHandler extends Thread
         return vector;
     }
 
-    // Function to validate if the string is properlly formed JSON, else return false.
+    // Function to validate if the string is properly formed JSON, else return false.
     // Using the org.json library to parse the request.
     private boolean valid_JSON(String request)
     {
         try
         {
-            JSONobject valid = new JSONobject(request);
+            JSONObject valid = new JSONObject(request);
             return true;
         }
         catch (Exception e)
@@ -94,29 +93,30 @@ public class RequestHandler extends Thread
         {
             if (string.contains(value))
             {
-                string[] return_value = string.split(":");
-            }
-            if (return_value.length >= 2)
-            {
-                return return_value[1];
-            }
-            else 
-            {
-                return ("");
+                String[] return_value = string.split(":");
+                if (return_value.length >= 2)
+                {
+                    return return_value[1].trim(); // trim to remove extra spaces
+                }
+                else 
+                {
+                    return "";
+                }
             }
         }
         return null;
     }
 
+
     // Run function
-    // starts when a new request is recieved 
+    // starts when a new request is received 
 
     /*
     Process flow
-    1. Init communication - use print printwriter to send data to the client and scanner to recieve. 
-    2. Recieve and validate - use valid_request() function. 
-    3. Read data till a valid JSON payload is recieved. 
-    4. Convert to a vector and add to producer consumer queue. 
+    1. Init communication - use print printwriter to send data to the client and scanner to receive. 
+    2. Receive and validate - use valid_request() function. 
+    3. Read data till a valid JSON payload is received. 
+    4. Convert to a vector and add to producer-consumer queue. 
     5. Send an appropriate response. 
     6. Close socket. 
     */
@@ -130,6 +130,7 @@ public class RequestHandler extends Thread
             Scanner Scanner = new Scanner(this.socket.getInputStream()).useDelimiter("\n");
             String line = "";
 
+            // Receive and validate request
             while (!valid_request(line))
             {
                 if (Scanner.hasNextLine())
@@ -141,23 +142,26 @@ public class RequestHandler extends Thread
                     {
                         break;
                     }
+                }
                 else
                 {
-                    break
-                }
+                    break;
                 }
             }
 
-            line += temp;
             // Convert string to a vector 
             Vector<String> converted_vector = string_to_vector(line);
             System.out.println(line + "\r\n\r\n");
+
             // Process the request with ProducerConsumer
             String id = this.ProducerConsumer.getValue(converted_vector, "User-Agent");
+
             // Add to request queue 
             this.ProducerConsumer.addRequest(converted_vector);
-            // Retrive response
+
+            // Retrieve response
             String res = this.ProducerConsumer.getRequest(id);
+
             // Send the response back to client/content server
             PrintWriter.println(res);
             PrintWriter.flush();

@@ -18,18 +18,19 @@ end
 */
 
 import java.net.*;
+
 public class AggregationServer
 {
     public static void main (String[] args)
     {
-        ServerSocket Serversocket = null;
+        ServerSocket server_socket = null;
         Socket socket = null;
-        ProducerConsumer ProducerConsumer = new ProducerConsumer();
-        ProducerConsumer.start();
+        ProducerConsumer producer_consumer = new ProducerConsumer();
+        producer_consumer.start();
 
         try 
         {
-            ServerSocket = new ServerSocket(3000);
+            server_socket = new ServerSocket(3000);
             System.out.println("Starting aggregation server...");
         }
         catch (Exception e)
@@ -40,8 +41,8 @@ public class AggregationServer
         {
             try
             {
-                socket = ServerSocket.accept();
-                new requestHandler(socket, ProducerConsumer).start();
+                socket = server_socket.accept();
+                new RequestHandler(socket, producer_consumer).start();
             }
             catch (Exception e)
             {
