@@ -36,6 +36,7 @@ public class ContentServer extends Thread
     {
         BufferedReader user_input = new BufferedReader(new InputStreamReader(System.in));
         boolean send_request = true;
+
         System.out.println("Hello ContentServer " + content_server_Id + "! Please enter address and port in the format address:port");
         String address = null;
         Integer port = null;
@@ -116,12 +117,14 @@ public class ContentServer extends Thread
                 {
                     send_request = Boolean.parseBoolean(user_input.readLine());
                 }
-                catch (Exception err) 
+                catch (IOException err) 
                 {
-                    err.printStackTrace();
+                    System.err.println("Error reading input: " + err.toString());
+                    send_request = false;
                 }
             }
         }
+        send_request = false;
         System.out.println("Goodbye ContentServer " + content_server_Id + "!");
     }
 
