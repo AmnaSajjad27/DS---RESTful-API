@@ -1,20 +1,18 @@
-# Define variables for directories and files
-SOURCE_DIR = .
-TEST_DIR = Tests
+# Define variables for files
 JAR_FILE = json-20240303.jar
 
-# Compile all Java source files
+# Compile command
 compile:
-	javac -cp "./$(JAR_FILE)" -d ./ $(SOURCE_DIR)/*.java $(TEST_DIR)/*.java -Xlint
-
-# Run tests
-test: compile
-	java -cp "./:./$(JAR_FILE)" Tests.PUTTest < $(TEST_DIR)/put_test_input.txt
+	javac -cp "./$(JAR_FILE)" -d . *.java -Xlint
 
 # Clean up compiled files
 clean:
-	rm -f *.class $(TEST_DIR)/*.class
+	rm -f *.class
 
-# Run PUT request test
+# Run tests
+test:
+	java -cp "./:./$(JAR_FILE)" PUTTest < put_test_input.txt
+
+# TEST PUT REQUEST
 testputrequest: compile
-	java -cp "./:./$(JAR_FILE)" Tests.PUTTest < $(TEST_DIR)/put_test_input.txt
+	java -cp "./:./$(JAR_FILE)" PUTTest < put_test_input.txt
