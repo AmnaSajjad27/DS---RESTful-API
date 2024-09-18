@@ -38,11 +38,6 @@ public class PUTTest
         {
             System.err.println(e.toString());
         }
-        
-        // Stop the ContentServer
-        // Ideally, you would have a proper way to stop or signal the server to stop
-        // cs.stop(); // Implement this if your ContentServer class supports stopping
-        
         return s1.equals(s2);
     }
 

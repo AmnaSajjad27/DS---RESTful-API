@@ -3,7 +3,7 @@ JAR_FILE = json-20240303.jar
 
 # Compile all Java files
 compile:
-	javac -cp "./$(JAR_FILE)" -d . *.java -Xlint
+	javac -cp "./$(JAR_FILE)" -d . *.java 
 
 # Clean up compiled files
 clean:
@@ -11,11 +11,11 @@ clean:
 
 # Run tests after compiling
 test: compile
-	java -cp "./:./$(JAR_FILE)" PUTTest < put_test_input.txt
+	java -cp "./:./$(JAR_FILE)" -d ./*.java && java -cp ./ Test
 
 # Compile and run the client
 client: compile
-	java -cp "./:./$(JAR_FILE)" Client
+	java -cp "./:./$(JAR_FILE)" GETClient
 
 # Compile and run the aggregation server
 aggregation: compile
@@ -26,5 +26,17 @@ conserve: compile
 	java -cp "./:./$(JAR_FILE)" ContentServer
 
 # Test PUT request after compiling
-testputrequest: clean compile
+testputrequest:
 	java -cp "./:./$(JAR_FILE)" PUTTest < put_test_input.txt
+
+# Test GET request 
+testgetrequest: 
+	java -cp "./:./$(JAR_FILE)" GETTest <get_test_input.txt
+
+# multiplerequests
+testmultiple:
+	make testputrequest && make testgetrequest
+
+# AGGREGATION EXPUNGING EXPIRED DATA WORKS (30s)
+testdataexpunge:
+	javac -cp "./:./$(JAR_FILE)" -d ./ *.java && java -cp ./ DataExpunge < ExpungeInput.txt
