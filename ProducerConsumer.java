@@ -6,6 +6,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.io.*;
 import org.json.*;
 
+@SuppressWarnings("unchecked")
 public class ProducerConsumer extends Thread {
     private PriorityQueue<Vector<String>> requestQueue;
     private HashMap<String, String> responses;
