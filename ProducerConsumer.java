@@ -1,4 +1,4 @@
-// // ProducerConsumer class manages weather data and requests using a priority queue
+// ProducerConsumer class manages weather data and requests using a priority queue
 import java.net.*;
 import java.time.Duration;
 import java.time.Instant;
@@ -267,7 +267,7 @@ public class ProducerConsumer extends Thread
         }
     }
 
-    // PUT request - performReqest calls put to write data and to mao 
+    // PUT request - performReqest calls put to write data and to map
     // reuturns 200 if success, 201 if the latest weather file, 204 for empty data, 500 for any other issues
     private String put(Vector<String> data) 
     {

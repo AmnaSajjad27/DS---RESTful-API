@@ -70,6 +70,7 @@ public class GETTest {
                         + t.getRequest() + "\033[0m");
             });
             threads[i].start();
+            
         }
 
         for (Thread thread : threads) {
