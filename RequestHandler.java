@@ -5,7 +5,20 @@ import java.util.Scanner;
 import java.util.Vector;
 import org.json.*;
 
-public class RequestHandler extends Thread {
+// starts when a new request is received 
+
+    /*
+    Process flow
+    1. Init communication - use print printwriter to send data to the client and scanner to receive. 
+    2. Receive and validate - use valid_request() function. 
+    3. Read data till a valid JSON payload is received. 
+    4. Convert to a vector and add to producer-consumer queue. 
+    5. Send an appropriate response. 
+    6. Close socket. 
+    */
+
+public class RequestHandler extends Thread 
+{
     private Socket socket;
     private ProducerConsumer pc;
 
@@ -141,14 +154,3 @@ public class RequestHandler extends Thread {
     }
 
 }
-    // starts when a new request is received 
-
-    /*
-    Process flow
-    1. Init communication - use print printwriter to send data to the client and scanner to receive. 
-    2. Receive and validate - use valid_request() function. 
-    3. Read data till a valid JSON payload is received. 
-    4. Convert to a vector and add to producer-consumer queue. 
-    5. Send an appropriate response. 
-    6. Close socket. 
-    */

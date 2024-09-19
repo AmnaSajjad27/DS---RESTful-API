@@ -11,7 +11,7 @@ public class PUTTest
 
         // Wait for the server to process the request
         try {
-            Thread.sleep(3000); // Increase wait time if needed
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

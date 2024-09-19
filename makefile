@@ -33,10 +33,6 @@ testputrequest:
 testgetrequest: 
 	java -cp "./:./$(JAR_FILE)" GETTest <get_test_input.txt
 
-# multiplerequests
-testmultiple:
-	make testputrequest && make testgetrequest
-
 # AGGREGATION EXPUNGING EXPIRED DATA WORKS (30s)
 testdataexpunge:
 	javac -cp "./:./$(JAR_FILE)" -d ./ *.java && java -cp ./ DataExpunge < ExpungeInput.txt
