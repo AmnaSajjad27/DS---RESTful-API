@@ -12,12 +12,14 @@ public class GETClient extends Thread
     private Integer lamportTime;
     private Vector<String> response;
 
+    // Initialize the GET client with a random Lamport time and unique thread ID
     public GETClient() 
     {
         this.lamportTime = (int) Math.floor(Math.random() * (10 - 0 + 1) + 0);
         this.clientId = String.valueOf(Thread.currentThread().getId());
     }
 
+    // Returns the response received from the server
     public Vector<String> getResponse() 
     {
         return this.response;
@@ -33,7 +35,7 @@ public class GETClient extends Thread
         Integer port = null;
         try 
         {
-            // Get the address and port from terminal input
+            // Read address and port from user input
             String temp = terminalInput.readLine();
             if (temp != null) {
                 String[] connectionDetails = temp.split(":");
@@ -50,6 +52,7 @@ public class GETClient extends Thread
         {
             try 
             {
+                // Use default address and port if not provided
                 if (address == null || port == null) 
                 {
                     socket = new Socket("127.0.0.1", 4567);
@@ -59,10 +62,11 @@ public class GETClient extends Thread
                     socket = new Socket(address, port);
                 }
 
-                // Create server response reader and client request writer
+                // Setup reader for server response and writer for client requests
                 this.server_response = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 this.client_requests = new PrintWriter(socket.getOutputStream(), true);
 
+                // Ask for optional station ID and send GET request
                 System.out.println("Optional: Please enter the station id (leave empty if you want latest data):");
                 String stationId = terminalInput.readLine();
                 sendGetRequest(stationId);
@@ -70,24 +74,26 @@ public class GETClient extends Thread
                 Vector<String> responseLines = new Vector<>();
                 String line;
 
-                // Read the response from the server line by line
+                // Read the server response line by line
                 while ((line = server_response.readLine()) != null) 
                 {
                     responseLines.add(line);
                 }
 
+                // Update the Lamport time based on the server response
                 updateLamportTime(responseLines);
                 this.response = responseLines;
 
                 System.out.println("Server response for Client " + this.clientId + " : " + responseLines + "\r\n");
 
+                // Ask if the user wants to send another GET request
                 System.out.println("Request successful. Would you like to send another GET request? ('true' for yes, 'false' for no)");
                 sendRequest = Boolean.parseBoolean(terminalInput.readLine());
 
             } 
             catch (Exception e) 
             {
-                // Handle connection issues
+                // Handle connection errors and ask to retry
                 System.err.println(
                         "Client " + this.clientId + " - Failed to connect to aggregation server: "
                                 + e.toString()
@@ -103,7 +109,7 @@ public class GETClient extends Thread
             } 
             finally 
             {
-                // Ensure socket and streams are closed
+                // Ensure all resources (socket, streams) are properly closed
                 closeConnections();
             }
         }
@@ -111,7 +117,7 @@ public class GETClient extends Thread
         System.out.println("Goodbye Client " + clientId + "!");
     }
 
-    // Properly close connections
+    // Close socket and I/O streams
     private void closeConnections() 
     {
         try 
@@ -126,6 +132,7 @@ public class GETClient extends Thread
         }
     }
 
+    // Update the Lamport time based on the server's timestamp in the response
     private void updateLamportTime(Vector<String> data) 
     {
         for (String string : data) 
@@ -138,10 +145,12 @@ public class GETClient extends Thread
         }
     }
 
+    // Send the GET request to the aggregation server
     private void sendGetRequest(String stationId) 
     {
         try 
         {
+            // Build the GET request based on whether a station ID is provided
             if (stationId == null || stationId.isEmpty()) 
             {
                 this.client_requests.println("GET /weather.json HTTP/1.1\r\nHost: localhost\r\nUser-Agent: Client " +
@@ -164,7 +173,8 @@ public class GETClient extends Thread
 
     public static void main(String[] args) 
     {
+        // Start the GET client thread
         GETClient client = new GETClient();
         client.start();
     }
-}
+} 

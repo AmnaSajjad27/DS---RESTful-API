@@ -1,4 +1,4 @@
-// Content Server 
+// A Java program for a Client
 import java.io.*;
 import java.net.*;
 import java.nio.file.Files;
@@ -9,158 +9,142 @@ import org.json.*;
 
 public class ContentServer extends Thread
 {
-    // Variable initalisations 
     private Socket socket;
-    private DataInputStream server_response;
-    private PrintWriter content_server_requests;
-    // Unique id for content server 
-    private String content_server_Id;
-    // Clock to synchronise 
-    private Integer lamport_time;
-    // To store server response 
+    private DataInputStream serverResponse;
+    private PrintWriter contentServerRequests;
+    private String contentServerId;
+    private Integer lamportTime;
     private Vector<String> response;
 
-    // Constructor: Initialise the content server, set id using thread's id and lamport time to 0
+    // Initialize content server with thread id and lamport timestamp
     public ContentServer()
     {
-        this.content_server_Id = String.valueOf(Thread.currentThread().getId());
-        this.lamport_time = 0;
+        this.contentServerId = String.valueOf(Thread.currentThread().getId());
+        this.lamportTime = 0;
     }
 
-    // Method to return aggregation server response as a string
-    public String getResponse() {
+    // Retrieve the server response
+    public String getResponse()
+    {
         return this.response.toString();
     }
 
-    /*
-    Main method 
-    The server listens for input from the terminal to connect to the aggregation server
-    Then sends PUT request with the weather data
-    */
+    // Main execution for the content server, managing connections and requests
     @Override
-    public void run() 
+    public void run()
     {
         BufferedReader terminalinput = new BufferedReader(new InputStreamReader(System.in));
         boolean sendRequest = true;
-
-        System.out.println("Hello ContentServer " + content_server_Id
-                + "! Please enter address and port in the format address:port");
-
+        System.out.println("Hello ContentServer " + contentServerId + "! Please enter address and port in the format address:port");
         String address = null;
         Integer port = null;
 
-        try 
+        try
         {
+            // Get server address and port from terminal input
             String temp = terminalinput.readLine();
-
-            if (temp != null) 
+            if (temp != null)
             {
                 String[] connectionDetails = temp.split(":");
                 address = connectionDetails[0];
                 port = Integer.parseInt(connectionDetails[1]);
             }
         }
-        // Handle input errors when reading from termainl 
-        catch (Exception e) 
+        catch (Exception e)
         {
             System.err.println("Error with reading terminal input: " + e.toString());
         }
-        // While loop to handle multiple requests 
+
         while (sendRequest)
         {
-            try 
+            try
             {
-                // If invalid or none given, use defualt values
-                if (address == null || port == null) {
-                    socket = new Socket("127.0.0.1", 4567);
-                } else {
+                // Set default connection if address/port invalid
+                if (address == null || port == null)
+                {
+                    socket = new Socket("127.0.0.1", 3000);
+                }
+                else
+                {
                     socket = new Socket(address, port);
                 }
 
-                // Prompt the user to input the file name containing weather data.
+                // Request weather data file location from user
                 System.out.println("Please input file name of weather data: ");
-                String file_location = terminalinput.readLine();
+                String fileLoc = terminalinput.readLine();
 
-                // Initialise input and output streams for server 
-                server_response = new DataInputStream(socket.getInputStream());
-                content_server_requests = new PrintWriter(socket.getOutputStream());
+                serverResponse = new DataInputStream(socket.getInputStream());
+                contentServerRequests = new PrintWriter(socket.getOutputStream());
 
-                // Perform PUT request - sending data to server 
-                sendPutRequest(file_location);
+                // Send PUT request with the provided weather file
+                sendPutRequest(fileLoc);
 
-                // Store the response in a Vector 
+                // Capture server response
                 Vector<String> line = new Vector<>();
                 Scanner s = new Scanner(this.socket.getInputStream());
-                while (s.hasNextLine()) 
+                while (s.hasNextLine())
                 {
                     line.add(s.nextLine());
                 }
+
                 this.response = line;
-                // Update lamport time using server response. 
+                // Update the lamport timestamp
                 updateLamportTime(line);
 
-                System.out.println("Server response for ContentServer " + this.content_server_Id + " : " + line + "\r\n\r\n");
+                System.out.println("Server response for ContentServer " + this.contentServerId + " : " + line + "\r\n\r\n");
 
-                // Close the request and server response 
-                content_server_requests.close();
-                server_response.close();
+                contentServerRequests.close();
+                serverResponse.close();
 
                 System.out.println("Request successful. Would you like to send another PUT request? ('true' for yes, 'false' for no)");
-
-                // Continour request if user types "true"
                 sendRequest = Boolean.parseBoolean(terminalinput.readLine());
 
             }
-            catch (Exception e) 
+            catch (Exception e)
             {
-
-                System.err.println("ContentServer " + this.content_server_Id + " - Failed to connect to aggregation server: "
+                // Handle errors during connection to the server
+                System.err.println("ContentServer " + this.contentServerId + " - Failed to connect to aggregation server: "
                                 + e.toString() + "\nWould you like to try connecting again? ('true' for yes, 'false' for no)");
-                try 
+                try
                 {
                     sendRequest = Boolean.parseBoolean(terminalinput.readLine());
-                } 
-                catch (Exception err) 
+                }
+                catch (Exception err)
                 {
                     err.printStackTrace();
                 }
             }
         }
 
-        System.out.println("Goodbye ContentServer " + content_server_Id + "!");
+        System.out.println("Goodbye ContentServer " + contentServerId + "!");
     }
 
-    // This method updates lamport time based on server repsonse 
+    // Update the content server's lamport time based on server response
     private void updateLamportTime(Vector<String> data)
     {
-        String server_time = "";
+        String serverTime = "";
         for (String string : data)
         {
-            if (string.contains("Lamport-Timestamp")) 
+            if (string.contains("Lamport-Timestamp"))
             {
-                server_time = string.split(":")[1].strip();
-                this.lamport_time = Math.max(Integer.parseInt(server_time), this.lamport_time) + 1;
+                serverTime = string.split(":")[1].strip();
+                this.lamportTime = Math.max(Integer.parseInt(serverTime), this.lamportTime) + 1;
                 break;
             }
         }
     }
 
-    
-    // This method sends a PUT request to the Aggregation Server with the provided weather data file.
-    // If the server connection is closed or failed, the request is saved locally for later recovery.
-    private void sendPutRequest(String file_location) 
+    // Send PUT request with weather data or handle server recovery
+    private void sendPutRequest(String fileLoc)
     {
-        Path path = Paths.get("ContentServer" + this.content_server_Id + "Replication.txt");
-
-        // Check if there is a saved replication 
+        Path path = Paths.get("ContentServer" + this.contentServerId + "Replication.txt");
         if (Files.exists(path))
         {
-            try 
+            try
             {
                 String req = new String(Files.readAllBytes(path));
-                content_server_requests.println(req);
-                content_server_requests.flush();
-                // Delete the replication after recovery 
+                contentServerRequests.println(req);
+                contentServerRequests.flush();
                 Files.delete(path);
             }
             catch (Exception e)
@@ -171,34 +155,31 @@ public class ContentServer extends Thread
         else
         {
             String data = "";
-            // if server fails, save locally 
             if (socket.isOutputShutdown() || socket.isClosed())
             {
                 try
                 {
                     Files.writeString(path, data);
                 }
-                catch (Exception err) 
+                catch (Exception err)
                 {
                     System.err.println(err.toString());
                 }
             }
             else
             {
-                // Read from provided file 
-                try 
+                try
                 {
-                    String req = new String(Files.readAllBytes(Paths.get(file_location)));
-                    // Format the PUT request 
+                    // Read weather data and prepare PUT request
+                    String req = new String(Files.readAllBytes(Paths.get(fileLoc)));
                     data += "PUT /weather.json HTTP/1.1\n";
-                    data += "User-Agent:ContentServer" + content_server_Id + '\n';
-                    data += "Lamport-Timestamp: " + String.valueOf(this.lamport_time) + '\n';
+                    data += "User-Agent:ContentServer" + contentServerId + '\n';
+                    data += "Lamport-Timestamp: " + String.valueOf(this.lamportTime) + '\n';
                     data += "Content-Type: application/json\n";
                     data += "Content-Length: " + req.length() + "\n\r\n\r\n";
-                    data += req.toString();
-                    // Send to aggregation server 
-                    content_server_requests.println(data);
-                    content_server_requests.flush();
+                    data += req;
+                    contentServerRequests.println(data);
+                    contentServerRequests.flush();
                 }
                 catch (Exception e)
                 {
@@ -206,12 +187,11 @@ public class ContentServer extends Thread
                 }
             }
         }
-
     }
-    // Main method to create and start the content server 
+
     public static void main(String[] args)
     {
-        ContentServer content_server = new ContentServer();
-        content_server.start();
+        ContentServer cs = new ContentServer();
+        cs.start();
     }
 }

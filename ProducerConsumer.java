@@ -222,8 +222,7 @@ public class ProducerConsumer extends Thread
             default:
                 break;
         }
-        response += newLamportTime + "\nContent-Length: " + String.valueOf(message.length())
-                + "\nContent-Type: application/json\r\n\r\n" + message;
+        response += newLamportTime + "\nContent-Length: " + String.valueOf(message.length()) + "\nContent-Type: application/json\r\n\r\n" + message;
         return response;
     }
 

@@ -4,7 +4,7 @@ public class AggregationServer
 {
     public static void main (String[] args)
     {
-        // Declare server socket anf client socket 
+        // Declare server socket and client socket 
         ServerSocket server_socket = null;
         Socket socket = null;
 

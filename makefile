@@ -9,10 +9,6 @@ compile:
 clean:
 	rm -f *.class
 
-# Run tests after compiling
-test: compile
-	java -cp "./:./$(JAR_FILE)" -d ./*.java && java -cp ./ Test
-
 # Compile and run the client
 client: compile
 	java -cp "./:./$(JAR_FILE)" GETClient
