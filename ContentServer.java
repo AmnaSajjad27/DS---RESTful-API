@@ -134,63 +134,6 @@ public class ContentServer extends Thread
         }
     }
 
-    /*
-    // Send PUT request with weather data, handle server recovery
-    private void sendPutRequest(String fileLoc)
-    {
-        Path path = Paths.get("ContentServer" + this.contentServerId + "Replication.txt");
-        if (Files.exists(path))
-        {
-            try
-            {
-                String req = new String(Files.readAllBytes(path));
-                contentServerRequests.println(req);
-                contentServerRequests.flush();
-                Files.delete(path);
-            }
-            catch (Exception e)
-            {
-                System.err.println(e.toString());
-            }
-        }
-        else
-        {
-            String data = "";
-            if (socket.isOutputShutdown() || socket.isClosed())
-            {
-                try
-                {
-                    Files.writeString(path, data);
-                }
-                catch (Exception err)
-                {
-                    System.err.println(err.toString());
-                }
-            }
-            else
-            {
-                try
-                {
-                    // Read weather data and prepare PUT request
-                    String req = new String(Files.readAllBytes(Paths.get(fileLoc)));
-                    data += "PUT /weather.json HTTP/1.1\n";
-                    data += "User-Agent:ContentServer" + contentServerId + '\n';
-                    data += "Lamport-Timestamp: " + String.valueOf(this.lamportTime) + '\n';
-                    data += "Content-Type: application/json\n";
-                    data += "Content-Length: " + req.length() + "\n\r\n\r\n";
-                    data += req;
-                    contentServerRequests.println(data);
-                    contentServerRequests.flush();
-                }
-                catch (Exception e)
-                {
-                    System.err.println(e.toString());
-                }
-            }
-        }
-    }
-*/
-
     private void sendPutRequest(String fileLoc) {
     Path path = Paths.get("ContentServer" + this.contentServerId + "Replication.txt");
     
