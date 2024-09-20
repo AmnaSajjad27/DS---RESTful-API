@@ -22,13 +22,28 @@ conserve: compile
 	java -cp "./:./$(JAR_FILE)" ContentServer
 
 # Test PUT request after compiling
-testputrequest:
+testputrequest: compile
 	java -cp "./:./$(JAR_FILE)" PUTTest < put_test_input.txt
 
 # Test GET request 
 testgetrequest: 
-	java -cp "./:./$(JAR_FILE)" GETTest <get_test_input.txt
+	java -cp "./:./$(JAR_FILE)" GETTest < get_test_input.txt
 
-# AGGREGATION EXPUNGING EXPIRED DATA WORKS (30s)
-testdataexpunge:
-	javac -cp "./:./$(JAR_FILE)" -d ./ *.java && java -cp ./ DataExpunge < ExpungeInput.txt
+# Test AGGREGATION EXPUNGING EXPIRED DATA WORKS (30s)
+testdataexpunge: compile
+	java -cp "./:./$(JAR_FILE)" DataExpunge < ExpungeInput.txt
+
+testlamport: compile
+	java -cp "./:./$(JAR_FILE)" LamportClockTest < LamportClockInput.txt
+
+test201request: compile
+	java -cp "./:./$(JAR_FILE)" Response_201 < Response_201_input.txt
+
+test400request: compile
+	java -cp "./:./$(JAR_FILE)" Response_400
+
+test500request: compile
+	java -cp "./:./$(JAR_FILE)" Response_500 InvalidJSON.json < Response_500_input.txt 
+
+test204request: compile
+	java -cp "./:./$(JAR_FILE)" Response_204 < Response_204_input.txt

@@ -134,7 +134,8 @@ public class ContentServer extends Thread
         }
     }
 
-    // Send PUT request with weather data or handle server recovery
+    /*
+    // Send PUT request with weather data, handle server recovery
     private void sendPutRequest(String fileLoc)
     {
         Path path = Paths.get("ContentServer" + this.contentServerId + "Replication.txt");
@@ -188,6 +189,58 @@ public class ContentServer extends Thread
             }
         }
     }
+*/
+
+    private void sendPutRequest(String fileLoc) {
+    Path path = Paths.get("ContentServer" + this.contentServerId + "Replication.txt");
+    
+    // Check for replication file
+    if (Files.exists(path)) {
+        try {
+            String req = new String(Files.readAllBytes(path));
+            contentServerRequests.println(req);
+            contentServerRequests.flush();
+            Files.delete(path);
+        } catch (Exception e) {
+            System.err.println(e.toString());
+        }
+    } else {
+        try {
+            // Read weather data and prepare PUT request
+            String req = new String(Files.readAllBytes(Paths.get(fileLoc)));
+
+            // Validate JSON
+            if (!isValidJson(req)) {
+                System.err.println("Invalid JSON format in file: " + fileLoc);
+                return; // Skip sending request if JSON is invalid
+            }
+
+            // Prepare PUT request
+            String data = "PUT /weather.json HTTP/1.1\n" +
+                          "User-Agent: ContentServer" + contentServerId + '\n' +
+                          "Lamport-Timestamp: " + String.valueOf(this.lamportTime) + '\n' +
+                          "Content-Type: application/json\n" +
+                          "Content-Length: " + req.length() + "\n\r\n\r\n" +
+                          req;
+                          
+            contentServerRequests.println(data);
+            contentServerRequests.flush();
+        } catch (Exception e) {
+            System.err.println(e.toString());
+        }
+    }
+}
+
+// Method to validate JSON
+private boolean isValidJson(String json) {
+    try {
+        new JSONObject(json); // or new JSONArray(json) for arrays
+        return true;
+    } catch (JSONException e) {
+        return false; // JSON is invalid
+    }
+}
+
 
     public static void main(String[] args)
     {

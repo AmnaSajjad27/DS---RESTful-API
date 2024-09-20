@@ -3,56 +3,73 @@ import java.util.Vector;
 import java.io.*;
 import org.json.*;
 
-public class ThreadConnection extends Thread {
+// Manages client connections and handles requests
+public class ThreadConnection extends Thread 
+{
     private Socket socket;
     private ProducerConsumer pc;
 
-    public ThreadConnection(Socket connectionSocket, ProducerConsumer prodCon) {
+    // Constructor initializes the socket and producer-consumer instance
+    public ThreadConnection(Socket connectionSocket, ProducerConsumer prodCon) 
+    {
         this.socket = connectionSocket;
         this.pc = prodCon;
     }
 
-    public void run() {
+    // Main method to handle incoming requests
+    public void run() 
+    {
         DataInputStream requests = null;
         DataOutputStream serverRes = null;
 
-        try {
+        try 
+        {
             requests = new DataInputStream(this.socket.getInputStream());
             serverRes = new DataOutputStream(this.socket.getOutputStream());
-
             System.out.println("Server: Client is connected.");
-        } catch (Exception e) {
+        } 
+        catch (Exception e) 
+        {
             System.err.println("Server initialization error: " + e.toString());
         }
 
         String request = null;
 
-        while (true) {
-            try {
+        while (true) 
+        {
+            try 
+            {
                 request = requests.readUTF();
 
-                if (request.contains("over")) {
+                // Exit loop if "over" command is received
+                if (request.contains("over")) 
+                {
                     this.socket.close();
                     Thread.currentThread().interrupt();
                     break;
                 }
 
-                // Pass a Vector<String> to addRequest
+                // Create a request vector and add it to the producer-consumer
                 Vector<String> requestVector = new Vector<>();
                 requestVector.add(request);
-                this.pc.addRequest(requestVector);  // No return value expected
+                this.pc.addRequest(requestVector);
 
-                // Use the request as the ID to get the response
-                String responseStr = this.pc.getRequest(request);  // getRequest returns a String
-                if (responseStr != null) {
-                    // Convert the String to JSONObject
+                // Get the response based on the request
+                String responseStr = this.pc.getRequest(request);
+                if (responseStr != null) 
+                {
+                    // Send the response back to the client
                     JSONObject response = new JSONObject(responseStr);
                     serverRes.writeUTF(response.toString());
                     serverRes.flush();
-                } else {
+                } 
+                else 
+                {
                     System.err.println("No response for the given request ID.");
                 }
-            } catch (Exception e) {
+            } 
+            catch (Exception e) 
+            {
                 System.err.println("Server error: " + e.toString());
                 break;
             }

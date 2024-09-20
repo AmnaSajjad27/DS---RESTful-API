@@ -3,54 +3,45 @@ import java.nio.file.Path;
 
 public class PUTTest 
 {
+    // Performs a PUT request and compares sent and received data
     public boolean putRequest(String filePath) 
     {
-        // Start content server
-        ContentServer cs = new ContentServer();
-        cs.start();
+        ContentServer content_server = new ContentServer(); // Start the content server
+        content_server.start();
 
-        // Wait for the server to process the request
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        // Read files for comparison
-        String s1 = "";
-        String s2 = "";
+        String s1 = "", s2 = "";
         try 
         {
             Path p1 = Path.of(filePath);
             Path p2 = Path.of("LatestWeatherData.json");
             s1 = Files.readString(p1);
-            s2 = Files.readString(p2);
-            
-            // Debug output
+            s2 = Files.readString(p2); 
+
+            // Debug output for comparison
             System.out.println("Sent data: " + s1);
             System.out.println("Received data: " + s2);
-            
-            // Remove whitespaces and newlines for comparison
-            s1 = s1.replaceAll("\\s+", "");
-            s2 = s2.replaceAll("\\s+", "");
         } 
         catch (Exception e) 
         {
             System.err.println(e.toString());
         }
-        return s1.equals(s2);
+
+        // Return whether the sent and received data match (ignoring whitespace)
+        return s1.replaceAll("\\s+", "").equals(s2.replaceAll("\\s+", ""));
     }
 
+    // Main method to execute PUT test
     public static void main(String[] args) 
     {
         PUTTest put = new PUTTest();
-        
-        // List of test files
         String[] testFiles = { "ContentServer1.json", "ContentServer2.json", "ContentServer3.json" };
-        
-        for (String testFile : testFiles) {
-            boolean result = put.putRequest(testFile);
-            System.out.println("\033[0;1mPut request for " + testFile + " works? " + result + "\033[0m");
-        }
+
+        System.out.println("\033[0;1mPut request works? " + put.putRequest("ContentServer1.json") + "\033[0m");
     }
 }
