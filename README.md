@@ -32,7 +32,7 @@ The provided Makefile automates the compilation and execution of the Java files 
 
 ### 6. Test PUT Request
 - **Command**: `make testputrequest`
-- **Description**: Compiles the Java files (if not already compiled) and runs the `PUTTest` class, which tests the PUT request functionality using input from `put_test_input.txt`.
+- **Description**: Runs the `PUTTest` class, which tests the PUT request functionality using input from `put_test_input.txt`.
 
 ### 7. Test GET Request
 - **Command**: `make testgetrequest`
@@ -40,27 +40,27 @@ The provided Makefile automates the compilation and execution of the Java files 
 
 ### 8. Test Data Expunge
 - **Command**: `make testdataexpunge`
-- **Description**: Compiles the Java files (if not already compiled) and runs the `DataExpunge` class, which tests the functionality for clearing expired data after 30 seconds.
+- **Description**: Runs the `DataExpunge` class, which tests the functionality for clearing expired data after 30 seconds.
 
 ### 9. Test Lamport Clock
 - **Command**: `make testlamport`
-- **Description**: Compiles the Java files (if not already compiled) and runs the `LamportClockTest` class, which tests the Lamport clock functionality.
+- **Description**: Runs the `LamportClockTest` class, which tests the Lamport clock functionality.
 
 ### 10. Test 201 Response
 - **Command**: `make test201request`
-- **Description**: Compiles the Java files (if not already compiled) and runs the `Response_201` class to test a 201 Created response.
+- **Description**: Runs the `Response_201` class to test a 201 Created response.
 
 ### 11. Test 400 Response
 - **Command**: `make test400request`
-- **Description**: Compiles the Java files (if not already compiled) and runs the `Response_400` class to test a 400 Bad Request response.
+- **Description**: Runs the `Response_400` class to test a 400 Bad Request response.
 
 ### 12. Test 500 Response
 - **Command**: `make test500request`
-- **Description**: Compiles the Java files (if not already compiled) and runs the `Response_500` class, testing an invalid JSON input using `InvalidJSON.json` and the input from `Response_500_input.txt`.
+- **Description**: Runs the `Response_500` class, testing an invalid JSON input using `InvalidJSON.json` and the input from `Response_500_input.txt`.
 
 ### 13. Test 204 Response
 - **Command**: `make test204request`
-- **Description**: Compiles the Java files (if not already compiled) and runs the `Response_204` class to test a 204 No Content response.
+- **Description**: Runs the `Response_204` class to test a 204 No Content response.
 
 ## How to Run Tests
 
