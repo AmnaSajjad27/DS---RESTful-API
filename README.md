@@ -67,7 +67,3 @@ The provided Makefile automates the compilation and execution of the Java files 
 1. Open a terminal and navigate to the directory containing the project files.
 2. Use the `make` command followed by the desired target (e.g., `make client`, `make test500request`, etc.) to run the respective command.
 3. Ensure that the necessary input files are present in the directory as specified in the Makefile.
-
----
-
-Feel free to adjust any sections or details as necessary!
