@@ -67,3 +67,25 @@ The provided Makefile automates the compilation and execution of the Java files 
 1. Open a terminal and navigate to the directory containing the project files.
 2. Use the `make` command followed by the desired target (e.g., `make client`, `make test500request`, etc.) to run the respective command.
 3. Ensure that the necessary input files are present in the directory as specified in the Makefile.
+
+
+## How to Run Tests
+1. Open a terminal and navigate to the directory containing the project files.
+2. Use the make compile and make aggregation command to compile the files and start the server. 
+3. Use the make command followed by the desired target (e.g., make client, make test500request, etc.) to run the respective command.
+4. Ensure that the necessary input files are present in the directory as specified in the Makefile.
+
+## How to Manually Perform HTTP GET and PUT Requests
+1. First, run `make compile` to compile all the Java files.
+2. Next, run `make aggregation` to start the aggregation server in a terminal window. You should see the incoming requests in this window.
+3. To test the GET request, open another terminal window and run `make client`. You should see the outgoing GET requests in this window.
+4. To test the PUT request, open yet another terminal window and run `make conserve`. You should see the outgoing PUT requests in this window.
+
+## Implementation of Lamport Clock Synchronization
+The aggregation server, content server, and client each maintain their own Lamport clocks. After each request (either a GET request by the client or a PUT request by the content server), they increment their own clocks. 
+
+When the aggregation server receives a GET or PUT request, it takes the maximum of its own clock and the incoming request's timestamp, then increments its own clock. When the client or content server receives a response from the aggregation server, it also takes the maximum of its own timestamp and increments its clock accordingly. 
+
+This algorithm is implemented in the Lamport timestamps in the requests and responses, which can be observed in the terminal windows for the aggregation server, content server, and client when you compile and run them.
+
+
