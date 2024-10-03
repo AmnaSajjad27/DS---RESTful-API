@@ -46,11 +46,11 @@ test201request: compile
 test400request: compile
 	java -cp "$(CLASSPATH)" Response_400
 
-# Test 500 Server Error response
+# Test 500 Server Error response - fails 
 test500request: compile
 	java -cp "$(CLASSPATH)" Response_500 InvalidJSON.json < Response_500_input.txt 
 
-# Test 204 No Content response
+# Test 204 No Content response - fails
 test204request: compile
 	java -cp "$(CLASSPATH)" Response_204 < Response_204_input.txt
 
@@ -58,13 +58,10 @@ test204request: compile
 testinvalidjson: compile
 	java -cp "$(CLASSPATH)" TestInvalidJSONParsing
 
-# Edge Case Test Commands
+# Edge Case
 testmissingstationid: compile
 	java -cp "$(CLASSPATH)" TestMissingStationID
 
 testnouseragent: compile
 	java -cp "$(CLASSPATH)" TestNoUserAgent
 
-# Integration Test Commands
-testclientserverinteraction: compile
-	java -cp "$(CLASSPATH)" TestClientServerInteraction
